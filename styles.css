@@ -356,9 +356,7 @@ button {
 }
 
 .work-copy p {
-  margin-top: 10px;
-  font-size: clamp(0.8rem, 1vw, 1.2rem);
-  line-height: 1.05;
+  display: none;
 }
 
 .studio-info {
