@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sound Studio Reference</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Libre+Baskerville:ital@1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="mini-logo" href="#top">NIISound</a>
+      <a class="header-link" href="#contact">Instagram</a>
+    </header>
+    <button class="global-mute" type="button" data-action="global-mute">Mute</button>
+
+    <main id="top">
+      <section class="landing" aria-label="Navigation">
+        <div class="giant-mark" aria-hidden="true" data-default="NIISound">NIISound</div>
+        <nav class="center-menu" aria-label="Primary">
+          <a href="#latest" data-mark="Massive">Music</a>
+          <a href="#works" data-mark="System">Sound-design</a>
+          <a href="#contact" data-mark="Talk">Contact</a>
+        </nav>
+        <p class="sound-warning">A massive soundsystem studio production By Ivan Nikandrov</p>
+        <a class="bottom-link left" href="#latest">try</a>
+        <a class="bottom-link right" href="#works">Vimeo</a>
+      </section>
+
+      <section class="player-section" id="latest" aria-label="Latest works">
+        <article class="main-player">
+          <video class="player-video" loop playsinline preload="metadata"></video>
+          <div class="player-shade"></div>
+          <button class="arrow arrow-left" type="button" aria-label="Previous work"></button>
+          <button class="arrow arrow-right" type="button" aria-label="Next work"></button>
+          <div class="media-controls">
+            <button class="control-button" type="button" data-action="play">Play</button>
+            <input class="progress" type="range" min="0" max="1000" value="0" step="1" aria-label="Video progress" />
+            <span class="timecode">00:00</span>
+            <button class="control-button" type="button" data-action="mute">Mute</button>
+          </div>
+          <h1 class="player-title">Monos</h1>
+        </article>
+      </section>
+
+      <section class="works-section" id="works">
+        <div class="work-grid"></div>
+      </section>
+
+      <section class="studio-info" id="contact">
+        <h2>NII | Creative Sound Studio</h2>
+        <p>We carefully craft original music with high quality sound design engineering.</p>
+        <div class="contacts">
+          <div>
+            <span>Telegram</span>
+            <a href="https://t.me/in_nikandrov">@in_nikandrov</a>
+          </div>
+          <div>
+            <span>Head of production & services</span>
+            <a href="mailto:in.nikandrov@gmail.com">in.nikandrov@gmail.com</a>
+          </div>
+          <div>
+            <span>Let's talk</span>
+            <a href="tel:+79675521992">(+7) 967 552 1992</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
