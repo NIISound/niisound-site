@@ -19,7 +19,7 @@ const works = [
   },
   {
     title: "\u041c\u0422\u0421 x \u0427\u0411\u0414",
-    meta: "Music / Sound design",
+    meta: "Music",
     video: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/videos/mts-chbd.mp4",
     image: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/images/mts-cover-large.png",
   },
