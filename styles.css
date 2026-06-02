@@ -303,6 +303,10 @@ button {
   background: #ddd;
 }
 
+.work-card.is-image-missing {
+  background: var(--red);
+}
+
 .work-card img {
   position: absolute;
   inset: 0;
@@ -340,6 +344,10 @@ button {
 }
 
 .work-card:hover .work-copy {
+  opacity: 1;
+}
+
+.work-card.is-image-missing .work-copy {
   opacity: 1;
 }
 
