@@ -168,7 +168,7 @@ function renderGrid() {
       card.href = "#latest";
       card.dataset.workIndex = work.index;
       card.innerHTML = `
-        <img src="${work.image}" alt="" />
+        <img src="${work.image}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
         <div class="work-copy">
           <div>
             <h2>${work.title}</h2>
@@ -176,6 +176,18 @@ function renderGrid() {
           </div>
         </div>
       `;
+      const image = card.querySelector("img");
+      const showFallback = () => {
+        if (card.classList.contains("is-image-missing")) return;
+        card.classList.add("is-image-missing");
+        image.remove();
+      };
+      image.addEventListener("error", showFallback, { once: true });
+      setTimeout(() => {
+        if (!image.complete || image.naturalWidth === 0) {
+          showFallback();
+        }
+      }, 4500);
       card.addEventListener("click", (event) => {
         event.preventDefault();
         loadWork(Number(card.dataset.workIndex), { autoplay: true });
