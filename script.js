@@ -77,9 +77,18 @@ const giantMark = document.querySelector(".giant-mark");
 const menuItems = document.querySelectorAll(".center-menu a");
 
 function playCurrentWork() {
+  ensureVideoSource();
   video.play().catch(() => {
     syncControls();
   });
+}
+
+function ensureVideoSource() {
+  const work = works[current];
+  if (video.currentSrc === work.video || video.src === work.video) return;
+
+  video.src = work.video;
+  video.load();
 }
 
 function showPlayerTitle() {
@@ -99,7 +108,8 @@ function scheduleTitleFade() {
 function loadWork(index, options = {}) {
   current = (index + works.length) % works.length;
   const work = works[current];
-  video.src = work.video;
+  video.pause();
+  video.removeAttribute("src");
   video.poster = work.image;
   video.muted = false;
   video.volume = 1;
@@ -111,6 +121,7 @@ function loadWork(index, options = {}) {
   syncControls();
 
   if (options.autoplay) {
+    ensureVideoSource();
     playCurrentWork();
   }
 }
