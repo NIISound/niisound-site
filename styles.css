@@ -317,7 +317,12 @@ button {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0;
   transition: opacity 140ms ease;
+}
+
+.work-card.is-image-loaded img {
+  opacity: 1;
 }
 
 .work-card::before {
