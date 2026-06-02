@@ -177,12 +177,20 @@ function renderGrid() {
         </div>
       `;
       const image = card.querySelector("img");
+      const showImage = () => {
+        card.classList.add("is-image-loaded");
+      };
       const showFallback = () => {
         if (card.classList.contains("is-image-missing")) return;
+        card.classList.remove("is-image-loaded");
         card.classList.add("is-image-missing");
         image.remove();
       };
+      image.addEventListener("load", showImage, { once: true });
       image.addEventListener("error", showFallback, { once: true });
+      if (image.complete && image.naturalWidth > 0) {
+        showImage();
+      }
       setTimeout(() => {
         if (!image.complete || image.naturalWidth === 0) {
           showFallback();
