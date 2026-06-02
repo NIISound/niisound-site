@@ -300,6 +300,10 @@ button {
   overflow: hidden;
   border-top: 1px solid var(--paper);
   border-right: 1px solid var(--paper);
+  background: var(--red);
+}
+
+.work-card.is-image-loaded {
   background: #ddd;
 }
 
@@ -339,11 +343,16 @@ button {
   padding: 20px;
   color: var(--ink);
   text-align: center;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 120ms ease;
 }
 
-.work-card:hover .work-copy {
+.work-card.is-image-loaded .work-copy {
+  opacity: 0;
+}
+
+.work-card:hover .work-copy,
+.work-card.is-image-loaded:hover .work-copy {
   opacity: 1;
 }
 
