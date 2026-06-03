@@ -82,10 +82,11 @@ const mainPlayer = document.querySelector(".main-player");
 const title = document.querySelector(".player-title");
 const playButton = document.querySelector('[data-action="play"]');
 const muteButton = document.querySelector('[data-action="mute"]');
-const globalMuteButton = document.querySelector('[data-action="global-mute"]');
 const progress = document.querySelector(".progress");
 const timecode = document.querySelector(".timecode");
-const qualitySelect = document.querySelector(".quality-select");
+const qualityMenu = document.querySelector(".quality-menu");
+const qualityTrigger = document.querySelector(".quality-trigger");
+const qualityOptions = document.querySelector(".quality-options");
 const grid = document.querySelector(".work-grid");
 const giantMark = document.querySelector(".giant-mark");
 const menuItems = document.querySelectorAll(".center-menu a");
@@ -99,18 +100,11 @@ function playCurrentWork() {
 
 function ensureVideoSource() {
   const work = works[current];
-  const preferredSource = work.hls || work.video;
+  const preferredSource = getPreferredVideoSource(work);
   if (activeVideoSource === preferredSource) return;
 
   destroyHlsPlayer();
   activeVideoSource = preferredSource;
-
-  if (work.hls && video.canPlayType("application/vnd.apple.mpegurl")) {
-    video.src = work.hls;
-    video.load();
-    syncQualityOptions();
-    return;
-  }
 
   if (work.hls && window.Hls && window.Hls.isSupported()) {
     hlsPlayer = new window.Hls({
@@ -118,7 +112,7 @@ function ensureVideoSource() {
       maxBufferLength: 20,
       maxMaxBufferLength: 40,
     });
-    hlsPlayer.loadSource(work.hls);
+    hlsPlayer.loadSource(preferredSource);
     hlsPlayer.attachMedia(video);
     hlsPlayer.on(window.Hls.Events.MANIFEST_PARSED, () => {
       syncQualityOptions();
@@ -131,7 +125,20 @@ function ensureVideoSource() {
     return;
   }
 
+  if (work.hls && video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = preferredSource;
+    video.load();
+    syncQualityOptions();
+    return;
+  }
+
   setMp4Source(work);
+}
+
+function getPreferredVideoSource(work) {
+  if (!work.hls) return work.video;
+  if (selectedQuality === "auto") return work.hls;
+  return work.hls.replace("master.m3u8", `${selectedQuality}p.m3u8`);
 }
 
 function destroyHlsPlayer() {
@@ -167,28 +174,90 @@ function getQualityLevels() {
 }
 
 function syncQualityOptions() {
-  if (!qualitySelect) return;
+  if (!qualityMenu || !qualityTrigger || !qualityOptions) return;
 
-  const levels = getQualityLevels();
-  qualitySelect.replaceChildren(
-    new Option("Auto", "auto"),
-    ...levels.map((level) => new Option(`${level.height}p`, String(level.height))),
+  const work = works[current];
+  const levels = getQualityLevels().length > 0 ? getQualityLevels() : getStaticQualityLevels(work);
+  const items = [
+    { label: "Auto", value: "auto" },
+    ...levels.map((level) => ({ label: `${level.height}p`, value: String(level.height) })),
+  ];
+  const hasSelectedQuality = items.some((item) => item.value === selectedQuality);
+  if (!hasSelectedQuality) {
+    selectedQuality = "auto";
+  }
+
+  qualityOptions.replaceChildren(
+    ...items.map((item) => {
+      const button = document.createElement("button");
+      button.className = "quality-option";
+      button.type = "button";
+      button.role = "option";
+      button.dataset.quality = item.value;
+      button.textContent = item.label;
+      button.setAttribute("aria-selected", String(item.value === selectedQuality));
+      button.addEventListener("click", () => {
+        selectedQuality = item.value;
+        closeQualityMenu();
+        syncQualityOptions();
+        applySelectedQuality();
+      });
+      return button;
+    }),
   );
-  qualitySelect.value = levels.some((level) => String(level.height) === selectedQuality) ? selectedQuality : "auto";
-  qualitySelect.disabled = levels.length === 0;
+  qualityTrigger.textContent = items.find((item) => item.value === selectedQuality)?.label || "Auto";
+  qualityTrigger.disabled = levels.length === 0;
+  qualityMenu.classList.toggle("is-disabled", levels.length === 0);
+}
+
+function closeQualityMenu() {
+  if (!qualityMenu || !qualityTrigger) return;
+  qualityMenu.classList.remove("is-open");
+  qualityTrigger.setAttribute("aria-expanded", "false");
 }
 
 function applySelectedQuality() {
-  if (!hlsPlayer) return;
+  const work = works[current];
+  const nextSource = getPreferredVideoSource(work);
+  if (activeVideoSource === nextSource) return;
 
-  if (selectedQuality === "auto") {
+  const resumeAt = video.currentTime || 0;
+  const shouldResume = !video.paused;
+  const restoreTime = () => {
+    if (Number.isFinite(video.duration) && video.duration > resumeAt) {
+      video.currentTime = resumeAt;
+    }
+    if (shouldResume) {
+      video.play().catch(() => {
+        syncControls();
+      });
+    }
+    syncControls();
+  };
+
+  video.addEventListener("loadedmetadata", restoreTime, { once: true });
+  activeVideoSource = "";
+  ensureVideoSource();
+
+  if (hlsPlayer && selectedQuality === "auto") {
     hlsPlayer.currentLevel = -1;
     return;
   }
 
+  if (!hlsPlayer) return;
+
   const targetHeight = Number(selectedQuality);
   const targetLevel = getQualityLevels().find((level) => level.height === targetHeight);
   hlsPlayer.currentLevel = targetLevel ? targetLevel.index : -1;
+}
+
+function getStaticQualityLevels(work) {
+  if (!work.hls) return [];
+  return [
+    { height: 1080 },
+    { height: 720 },
+    { height: 480 },
+  ];
 }
 
 function showPlayerTitle() {
@@ -233,7 +302,6 @@ function syncControls() {
   playButton.textContent = video.paused ? "Play" : "Pause";
   const muteLabel = video.muted ? "Unmute" : "Mute";
   muteButton.textContent = muteLabel;
-  globalMuteButton.textContent = muteLabel;
   mainPlayer.classList.toggle("is-playing", !video.paused);
 }
 
@@ -325,14 +393,23 @@ muteButton.addEventListener("click", () => {
   toggleMute();
 });
 
-globalMuteButton.addEventListener("click", () => {
-  toggleMute();
-});
+if (qualityTrigger && qualityMenu) {
+  qualityTrigger.addEventListener("click", () => {
+    if (qualityTrigger.disabled) return;
+    const isOpen = qualityMenu.classList.toggle("is-open");
+    qualityTrigger.setAttribute("aria-expanded", String(isOpen));
+  });
 
-if (qualitySelect) {
-  qualitySelect.addEventListener("change", () => {
-    selectedQuality = qualitySelect.value;
-    applySelectedQuality();
+  document.addEventListener("click", (event) => {
+    if (!qualityMenu.contains(event.target)) {
+      closeQualityMenu();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeQualityMenu();
+    }
   });
 }
 
