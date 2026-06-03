@@ -10,90 +10,13 @@
       href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Libre+Baskerville:ital@1&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=quality-select" />
-    <style>
-      .site-footer {
-        display: grid;
-        grid-template-columns: minmax(180px, 0.8fr) minmax(260px, 1.4fr) minmax(170px, 0.6fr);
-        gap: 20px;
-        padding: 18px;
-        background: var(--ink);
-        color: var(--paper);
-        border-top: 1px solid rgba(248, 247, 241, 0.16);
-      }
-
-      .footer-brand {
-        display: grid;
-        align-content: start;
-        gap: 8px;
-      }
-
-      .footer-brand a {
-        color: var(--red);
-        font-size: clamp(1.7rem, 3vw, 3.7rem);
-        line-height: 0.86;
-      }
-
-      .footer-brand span,
-      .footer-note,
-      .footer-infra,
-      .footer-links a {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 0.82rem;
-        font-weight: 700;
-        line-height: 1.28;
-        letter-spacing: 0;
-      }
-
-      .footer-note,
-      .footer-infra {
-        max-width: 680px;
-        margin: 0;
-      }
-
-      .footer-links {
-        display: grid;
-        align-content: start;
-        justify-items: start;
-        gap: 8px;
-      }
-
-      .footer-links a {
-        border-bottom: 1px solid currentColor;
-      }
-
-      .footer-infra {
-        grid-column: 2 / 4;
-        color: rgba(248, 247, 241, 0.68);
-      }
-
-      @media (max-width: 760px) {
-        .site-footer {
-          grid-template-columns: 1fr;
-          gap: 18px;
-          padding-bottom: 28px;
-        }
-
-        .footer-infra {
-          grid-column: auto;
-        }
-
-        .footer-brand span,
-        .footer-note,
-        .footer-infra,
-        .footer-links a {
-          font-size: 0.78rem;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css?v=player-ui-final" />
   </head>
   <body>
     <header class="site-header">
       <a class="mini-logo" href="#top">NIISound</a>
       <a class="header-link" href="https://www.instagram.com/in.nikandrov/" target="_blank" rel="noopener">Instagram</a>
     </header>
-    <button class="global-mute" type="button" data-action="global-mute">Mute</button>
-
     <main id="top">
       <section class="landing" aria-label="Navigation">
         <div class="giant-mark" aria-hidden="true" data-default="NIISound">NIISound</div>
@@ -117,9 +40,12 @@
             <button class="control-button" type="button" data-action="play">Play</button>
             <input class="progress" type="range" min="0" max="1000" value="0" step="1" aria-label="Video progress" />
             <span class="timecode">00:00</span>
-            <select class="quality-select" aria-label="Video quality">
-              <option value="auto">Auto</option>
-            </select>
+            <div class="quality-menu">
+              <button class="quality-trigger" type="button" aria-label="Video quality" aria-expanded="false">
+                Auto
+              </button>
+              <div class="quality-options" role="listbox" aria-label="Video quality"></div>
+            </div>
             <button class="control-button" type="button" data-action="mute">Mute</button>
           </div>
           <h1 class="player-title">Monos</h1>
@@ -169,6 +95,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.18/dist/hls.min.js"></script>
-    <script src="script.js?v=quality-select"></script>
+    <script src="script.js?v=player-ui-final"></script>
   </body>
 </html>
