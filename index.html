@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Libre+Baskerville:ital@1&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=hover-only" />
+    <link rel="stylesheet" href="styles.css?v=quality-select" />
     <style>
       .site-footer {
         display: grid;
@@ -117,6 +117,9 @@
             <button class="control-button" type="button" data-action="play">Play</button>
             <input class="progress" type="range" min="0" max="1000" value="0" step="1" aria-label="Video progress" />
             <span class="timecode">00:00</span>
+            <select class="quality-select" aria-label="Video quality">
+              <option value="auto">Auto</option>
+            </select>
             <button class="control-button" type="button" data-action="mute">Mute</button>
           </div>
           <h1 class="player-title">Monos</h1>
@@ -166,6 +169,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.18/dist/hls.min.js"></script>
-    <script src="script.js?v=hls-player"></script>
+    <script src="script.js?v=quality-select"></script>
   </body>
 </html>
