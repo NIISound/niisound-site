@@ -91,6 +91,33 @@ const grid = document.querySelector(".work-grid");
 const giantMark = document.querySelector(".giant-mark");
 const menuItems = document.querySelectorAll(".center-menu a");
 
+function getOrderedWorkItems() {
+  const workItems = works.map((work, index) => ({ ...work, index }));
+  const priorityTitles = [
+    "\u041c\u0422\u0421 x \u0427\u0411\u0414",
+    "Olymptrade",
+    "Delivery Club x \u0427\u0411\u0414",
+    "TBank Black",
+  ];
+  const priorityWorks = priorityTitles
+    .map((title) => workItems.find((work) => work.title === title))
+    .filter(Boolean);
+
+  return priorityWorks.concat(
+    workItems.filter((work) => !priorityTitles.includes(work.title) && work.title !== "GJ Adult" && work.title !== "Ostrovok"),
+    workItems.filter((work) => work.title === "GJ Adult"),
+    workItems.filter((work) => work.title === "Ostrovok"),
+  );
+}
+
+function getAdjacentWorkIndex(direction) {
+  const orderedWorks = getOrderedWorkItems();
+  const position = orderedWorks.findIndex((work) => work.index === current);
+  const nextPosition = (position + direction + orderedWorks.length) % orderedWorks.length;
+
+  return orderedWorks[nextPosition]?.index ?? 0;
+}
+
 function playCurrentWork() {
   ensureVideoSource();
   video.play().catch(() => {
@@ -325,21 +352,7 @@ function syncProgress() {
 }
 
 function renderGrid() {
-  const workItems = works.map((work, index) => ({ ...work, index }));
-  const priorityTitles = [
-    "\u041c\u0422\u0421 x \u0427\u0411\u0414",
-    "Olymptrade",
-    "Delivery Club x \u0427\u0411\u0414",
-    "TBank Black",
-  ];
-  const priorityWorks = priorityTitles
-    .map((title) => workItems.find((work) => work.title === title))
-    .filter(Boolean);
-  const orderedWorks = priorityWorks.concat(
-    workItems.filter((work) => !priorityTitles.includes(work.title) && work.title !== "GJ Adult" && work.title !== "Ostrovok"),
-    workItems.filter((work) => work.title === "GJ Adult"),
-    workItems.filter((work) => work.title === "Ostrovok"),
-  );
+  const orderedWorks = getOrderedWorkItems();
 
   grid.replaceChildren(
     ...orderedWorks.map((work) => {
@@ -386,8 +399,8 @@ function renderGrid() {
   );
 }
 
-document.querySelector(".arrow-left").addEventListener("click", () => loadWork(current - 1, { autoplay: true }));
-document.querySelector(".arrow-right").addEventListener("click", () => loadWork(current + 1, { autoplay: true }));
+document.querySelector(".arrow-left").addEventListener("click", () => loadWork(getAdjacentWorkIndex(-1), { autoplay: true }));
+document.querySelector(".arrow-right").addEventListener("click", () => loadWork(getAdjacentWorkIndex(1), { autoplay: true }));
 
 playButton.addEventListener("click", () => {
   if (video.paused) {
@@ -459,7 +472,7 @@ menuItems.forEach((item) => {
 });
 
 renderGrid();
-loadWork(0);
+loadWork(getOrderedWorkItems()[0]?.index ?? 0);
 
 const params = new URLSearchParams(window.location.search);
 
