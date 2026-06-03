@@ -2,60 +2,70 @@ const works = [
   {
     title: "Delivery Club x \u0427\u0411\u0414",
     meta: "Music / Sound design",
+    hls: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/hls/delivery-club-chbd/master.m3u8",
     video: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/videos/delivery-club-chbd.mp4",
     image: "https://i.vimeocdn.com/video/997280197-66c1df35cdcef6a9edc15b4d2e00163e688447e8577c6926e965e6efa569c176-d_1280x720?&r=pad&region=us",
   },
   {
     title: "Ostrovok",
     meta: "Music / Sound design",
+    hls: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/hls/ostrovok/master.m3u8",
     video: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/videos/ostrovok.mp4",
     image: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/images/ostrovok.png",
   },
   {
     title: "Head & Shoulders x \u0427\u0411\u0414",
     meta: "Music / Sound design",
+    hls: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/hls/head-shoulders-chbd/master.m3u8",
     video: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/videos/head-shoulders-chbd.mp4",
     image: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/images/head-shoulders-chbd.png",
   },
   {
     title: "\u041c\u0422\u0421 x \u0427\u0411\u0414",
     meta: "Music",
+    hls: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/hls/mts-chbd/master.m3u8",
     video: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/videos/mts-chbd.mp4",
     image: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/images/mts-cover-large.png",
   },
   {
     title: "Olymptrade",
     meta: "Music / Sound design",
+    hls: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/hls/olymptrade/master.m3u8",
     video: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/videos/olymptrade.mp4",
     image: "https://i.vimeocdn.com/video/1928920050-f0132b7d37aebbd70c8efaceabce371ab8379bb352f7d8b7fe9a479e3616ed65-d_1280x720?&r=pad&region=us",
   },
   {
     title: "TBank Black",
     meta: "Music / Sound design",
+    hls: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/hls/tbank-black/master.m3u8",
     video: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/videos/tbank-black.mp4",
     image: "https://i.vimeocdn.com/video/2086942113-39ef6c2a1983ee68e50b9fe7eb69dff4a3a3892fc4facbe14318c441259c132a-d_1280x720?&r=pad&region=us",
   },
   {
     title: "TBank Junior",
     meta: "Music / Sound design",
+    hls: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/hls/tbank-junior/master.m3u8",
     video: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/videos/tbank-junior.mp4",
     image: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/images/tbank-junior.png",
   },
   {
     title: "Cherry Tiggo 7 PRO MAX",
     meta: "Music / Sound design",
+    hls: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/hls/chery-tiggo-7-pro-max/master.m3u8",
     video: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/videos/chery-tiggo-7-pro-max.mp4",
     image: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/images/chery-tiggo-7-pro-max.png",
   },
   {
     title: "Old Spice x \u0427\u0411\u0414",
     meta: "Music / Sound design",
+    hls: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/hls/old-spice-chbd/master.m3u8",
     video: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/videos/old-spice-chbd.mp4",
     image: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/images/old-spice-chbd.png",
   },
   {
     title: "GJ Adult",
     meta: "Music / Sound design",
+    hls: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/hls/gj-adult/master.m3u8",
     video: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/videos/gj-adult.mp4",
     image: "https://pub-71cf5ad4e12b45e998894891123083eb.r2.dev/images/gj-adult.png",
   },
@@ -63,6 +73,8 @@ const works = [
 
 let current = 0;
 let titleFadeTimer;
+let hlsPlayer;
+let activeVideoSource = "";
 
 const video = document.querySelector(".player-video");
 const mainPlayer = document.querySelector(".main-player");
@@ -85,8 +97,45 @@ function playCurrentWork() {
 
 function ensureVideoSource() {
   const work = works[current];
-  if (video.currentSrc === work.video || video.src === work.video) return;
+  const preferredSource = work.hls || work.video;
+  if (activeVideoSource === preferredSource) return;
 
+  destroyHlsPlayer();
+  activeVideoSource = preferredSource;
+
+  if (work.hls && video.canPlayType("application/vnd.apple.mpegurl")) {
+    video.src = work.hls;
+    video.load();
+    return;
+  }
+
+  if (work.hls && window.Hls && window.Hls.isSupported()) {
+    hlsPlayer = new window.Hls({
+      capLevelToPlayerSize: true,
+      maxBufferLength: 20,
+      maxMaxBufferLength: 40,
+    });
+    hlsPlayer.loadSource(work.hls);
+    hlsPlayer.attachMedia(video);
+    hlsPlayer.on(window.Hls.Events.ERROR, (_event, data) => {
+      if (!data.fatal) return;
+      setMp4Source(work);
+    });
+    return;
+  }
+
+  setMp4Source(work);
+}
+
+function destroyHlsPlayer() {
+  if (!hlsPlayer) return;
+  hlsPlayer.destroy();
+  hlsPlayer = undefined;
+}
+
+function setMp4Source(work) {
+  destroyHlsPlayer();
+  activeVideoSource = work.video;
   video.src = work.video;
   video.load();
 }
@@ -109,6 +158,8 @@ function loadWork(index, options = {}) {
   current = (index + works.length) % works.length;
   const work = works[current];
   video.pause();
+  destroyHlsPlayer();
+  activeVideoSource = "";
   video.removeAttribute("src");
   video.poster = work.image;
   video.muted = false;
