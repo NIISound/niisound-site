@@ -336,8 +336,9 @@ function renderGrid() {
     .map((title) => workItems.find((work) => work.title === title))
     .filter(Boolean);
   const orderedWorks = priorityWorks.concat(
-    workItems.filter((work) => !priorityTitles.includes(work.title) && work.title !== "GJ Adult"),
+    workItems.filter((work) => !priorityTitles.includes(work.title) && work.title !== "GJ Adult" && work.title !== "Ostrovok"),
     workItems.filter((work) => work.title === "GJ Adult"),
+    workItems.filter((work) => work.title === "Ostrovok"),
   );
 
   grid.replaceChildren(
