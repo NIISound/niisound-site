@@ -325,11 +325,19 @@ function syncProgress() {
 }
 
 function renderGrid() {
-  const baseOrder = works.map((work, index) => ({ ...work, index })).slice(3).concat(
-    works.map((work, index) => ({ ...work, index })).slice(0, 3),
-  );
-  const orderedWorks = baseOrder.filter((work) => work.title !== "GJ Adult").concat(
-    baseOrder.filter((work) => work.title === "GJ Adult"),
+  const workItems = works.map((work, index) => ({ ...work, index }));
+  const priorityTitles = [
+    "\u041c\u0422\u0421 x \u0427\u0411\u0414",
+    "Olymptrade",
+    "Delivery Club x \u0427\u0411\u0414",
+    "TBank Black",
+  ];
+  const priorityWorks = priorityTitles
+    .map((title) => workItems.find((work) => work.title === title))
+    .filter(Boolean);
+  const orderedWorks = priorityWorks.concat(
+    workItems.filter((work) => !priorityTitles.includes(work.title) && work.title !== "GJ Adult"),
+    workItems.filter((work) => work.title === "GJ Adult"),
   );
 
   grid.replaceChildren(
