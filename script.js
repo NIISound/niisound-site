@@ -75,6 +75,7 @@ let current = 0;
 let titleFadeTimer;
 let hlsPlayer;
 let activeVideoSource = "";
+let selectedQuality = "auto";
 
 const video = document.querySelector(".player-video");
 const mainPlayer = document.querySelector(".main-player");
@@ -84,6 +85,7 @@ const muteButton = document.querySelector('[data-action="mute"]');
 const globalMuteButton = document.querySelector('[data-action="global-mute"]');
 const progress = document.querySelector(".progress");
 const timecode = document.querySelector(".timecode");
+const qualitySelect = document.querySelector(".quality-select");
 const grid = document.querySelector(".work-grid");
 const giantMark = document.querySelector(".giant-mark");
 const menuItems = document.querySelectorAll(".center-menu a");
@@ -106,6 +108,7 @@ function ensureVideoSource() {
   if (work.hls && video.canPlayType("application/vnd.apple.mpegurl")) {
     video.src = work.hls;
     video.load();
+    syncQualityOptions();
     return;
   }
 
@@ -117,6 +120,10 @@ function ensureVideoSource() {
     });
     hlsPlayer.loadSource(work.hls);
     hlsPlayer.attachMedia(video);
+    hlsPlayer.on(window.Hls.Events.MANIFEST_PARSED, () => {
+      syncQualityOptions();
+      applySelectedQuality();
+    });
     hlsPlayer.on(window.Hls.Events.ERROR, (_event, data) => {
       if (!data.fatal) return;
       setMp4Source(work);
@@ -131,6 +138,7 @@ function destroyHlsPlayer() {
   if (!hlsPlayer) return;
   hlsPlayer.destroy();
   hlsPlayer = undefined;
+  syncQualityOptions();
 }
 
 function setMp4Source(work) {
@@ -138,6 +146,49 @@ function setMp4Source(work) {
   activeVideoSource = work.video;
   video.src = work.video;
   video.load();
+}
+
+function getQualityLevels() {
+  if (!hlsPlayer || !Array.isArray(hlsPlayer.levels)) return [];
+
+  const seen = new Set();
+  return hlsPlayer.levels
+    .map((level, index) => ({
+      index,
+      height: level.height || 0,
+      bitrate: level.bitrate || 0,
+    }))
+    .filter((level) => {
+      if (!level.height || seen.has(level.height)) return false;
+      seen.add(level.height);
+      return true;
+    })
+    .sort((a, b) => b.height - a.height);
+}
+
+function syncQualityOptions() {
+  if (!qualitySelect) return;
+
+  const levels = getQualityLevels();
+  qualitySelect.replaceChildren(
+    new Option("Auto", "auto"),
+    ...levels.map((level) => new Option(`${level.height}p`, String(level.height))),
+  );
+  qualitySelect.value = levels.some((level) => String(level.height) === selectedQuality) ? selectedQuality : "auto";
+  qualitySelect.disabled = levels.length === 0;
+}
+
+function applySelectedQuality() {
+  if (!hlsPlayer) return;
+
+  if (selectedQuality === "auto") {
+    hlsPlayer.currentLevel = -1;
+    return;
+  }
+
+  const targetHeight = Number(selectedQuality);
+  const targetLevel = getQualityLevels().find((level) => level.height === targetHeight);
+  hlsPlayer.currentLevel = targetLevel ? targetLevel.index : -1;
 }
 
 function showPlayerTitle() {
@@ -169,6 +220,7 @@ function loadWork(index, options = {}) {
   progress.value = 0;
   timecode.textContent = "00:00";
   video.load();
+  syncQualityOptions();
   syncControls();
 
   if (options.autoplay) {
@@ -276,6 +328,13 @@ muteButton.addEventListener("click", () => {
 globalMuteButton.addEventListener("click", () => {
   toggleMute();
 });
+
+if (qualitySelect) {
+  qualitySelect.addEventListener("change", () => {
+    selectedQuality = qualitySelect.value;
+    applySelectedQuality();
+  });
+}
 
 function toggleMute() {
   video.muted = !video.muted;
