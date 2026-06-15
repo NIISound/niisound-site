@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 650" role="img" aria-labelledby="title desc">
+  <title id="title">IN Sound fluid red wordmark</title>
+  <desc id="desc">A custom red fluid IN Sound wordmark inspired by psychedelic sound typography.</desc>
+  <defs>
+    <filter id="fluid-warp" x="-8%" y="-20%" width="116%" height="140%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.006 0.018" numOctaves="2" seed="31" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="34" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="soft-edge" x="-4%" y="-6%" width="108%" height="112%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="0.28"/>
+    </filter>
+  </defs>
+
+  <rect width="1800" height="650" fill="#f8f7f1"/>
+  <g filter="url(#fluid-warp)">
+    <text
+      x="50%"
+      y="57%"
+      dominant-baseline="middle"
+      text-anchor="middle"
+      fill="#ff3b18"
+      font-family="Archivo Black, Arial Black, Impact, sans-serif"
+      font-size="260"
+      font-weight="900"
+      letter-spacing="-30"
+      transform="scale(1 1.22)"
+      transform-origin="900 330"
+    >IN Sound</text>
+
+    <g fill="none" stroke="#ff3b18" stroke-linecap="round" stroke-linejoin="round" filter="url(#soft-edge)">
+      <path d="M260 410 C330 505 545 520 655 458 C748 405 780 352 890 356 C1016 360 1040 472 1180 438 C1308 406 1392 330 1536 395" stroke-width="28"/>
+      <path d="M425 170 C590 80 770 145 887 112 C1015 75 1070 8 1210 52 C1320 86 1378 172 1515 146" stroke-width="22"/>
+      <path d="M505 202 C660 132 820 190 940 155 C1034 128 1100 72 1210 96 C1288 113 1350 185 1454 182" stroke-width="12"/>
+      <path d="M510 452 C618 484 732 470 844 430 C964 386 1058 354 1190 372 C1318 390 1390 470 1548 482" stroke-width="14"/>
+    </g>
+
+    <g fill="none" stroke="#f8f7f1" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M322 397 C415 472 542 468 648 420 C755 372 770 302 900 316 C1005 327 1048 408 1162 390 C1270 373 1362 308 1482 360" stroke-width="17"/>
+      <path d="M472 176 C620 116 792 166 910 132 C1013 102 1074 46 1190 76 C1288 102 1348 168 1456 164" stroke-width="12"/>
+      <path d="M622 452 C720 450 806 422 905 390 C1005 358 1096 338 1212 358 C1318 376 1394 438 1502 446" stroke-width="9"/>
+    </g>
+  </g>
+</svg>
