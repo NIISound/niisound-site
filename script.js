@@ -89,7 +89,6 @@ const qualityTrigger = document.querySelector(".quality-trigger");
 const qualityOptions = document.querySelector(".quality-options");
 const grid = document.querySelector(".work-grid");
 const giantMark = document.querySelector(".giant-mark");
-const menuItems = document.querySelectorAll(".center-menu a");
 
 function getOrderedWorkItems() {
   const workItems = works.map((work, index) => ({ ...work, index }));
@@ -123,6 +122,10 @@ function playCurrentWork() {
   video.play().catch(() => {
     syncControls();
   });
+}
+
+function prepareCurrentWork() {
+  ensureVideoSource();
 }
 
 function ensureVideoSource() {
@@ -377,18 +380,12 @@ function renderGrid() {
         if (card.classList.contains("is-image-missing")) return;
         card.classList.remove("is-image-loaded");
         card.classList.add("is-image-missing");
-        image.remove();
       };
       image.addEventListener("load", showImage, { once: true });
       image.addEventListener("error", showFallback, { once: true });
       if (image.complete && image.naturalWidth > 0) {
         showImage();
       }
-      setTimeout(() => {
-        if (!image.complete || image.naturalWidth === 0) {
-          showFallback();
-        }
-      }, 4500);
       card.addEventListener("click", (event) => {
         event.preventDefault();
         loadWork(Number(card.dataset.workIndex), { autoplay: true });
@@ -444,6 +441,18 @@ function toggleMute() {
   syncControls();
 }
 
+giantMark.addEventListener("pointerenter", prepareCurrentWork);
+giantMark.addEventListener("focus", prepareCurrentWork);
+giantMark.addEventListener("pointerdown", () => {
+  playCurrentWork();
+});
+
+giantMark.addEventListener("click", (event) => {
+  event.preventDefault();
+  document.querySelector("#latest").scrollIntoView({ behavior: "smooth" });
+  playCurrentWork();
+});
+
 progress.addEventListener("input", () => {
   if (!Number.isFinite(video.duration) || video.duration === 0) return;
   video.currentTime = (Number(progress.value) / 1000) * video.duration;
@@ -461,18 +470,8 @@ video.addEventListener("loadedmetadata", syncProgress);
 video.addEventListener("timeupdate", syncProgress);
 video.addEventListener("durationchange", syncProgress);
 
-menuItems.forEach((item) => {
-  item.addEventListener("mouseenter", () => {
-    giantMark.textContent = item.dataset.mark || giantMark.dataset.default;
-  });
-
-  item.addEventListener("mouseleave", () => {
-    giantMark.textContent = giantMark.dataset.default;
-  });
-});
-
 renderGrid();
-loadWork(getOrderedWorkItems()[0]?.index ?? 0);
+loadWork(works.findIndex((work) => work.title === "Olymptrade"));
 
 const params = new URLSearchParams(window.location.search);
 

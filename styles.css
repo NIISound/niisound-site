@@ -1,8 +1,8 @@
 :root {
   color-scheme: light;
-  --paper: #f8f7f1;
+  --paper: #f3f1e9;
   --ink: #101010;
-  --red: #ff3b08;
+  --red: #ff3512;
   --line: rgba(16, 16, 16, 0.16);
 }
 
@@ -44,12 +44,14 @@ button {
   top: 0;
   left: 0;
   z-index: 30;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start;
   width: 100%;
-  justify-content: space-between;
-  padding: 9px 10px;
+  padding: 9px 12px;
   font-size: clamp(1rem, 1.55vw, 1.75rem);
   line-height: 1;
+  color: #000;
 }
 
 .mini-logo {
@@ -59,7 +61,31 @@ button {
 }
 
 .header-link {
+  justify-self: end;
   font-size: clamp(1rem, 1.8vw, 2rem);
+}
+
+.top-menu {
+  display: flex;
+  justify-content: center;
+  gap: clamp(1.25rem, 3.2vw, 4.6rem);
+  justify-self: center;
+  padding-top: 1px;
+  font-family: "Archivo Black", Arial Black, Impact, sans-serif;
+  font-size: clamp(0.95rem, 1.16vw, 1.35rem);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--paper);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.42);
+  white-space: nowrap;
+}
+
+.top-menu a {
+  transition: transform 140ms ease;
+}
+
+.top-menu a:hover {
+  transform: skewX(-10deg);
 }
 
 .landing {
@@ -68,56 +94,126 @@ button {
   min-height: 100svh;
   place-items: center;
   overflow: hidden;
+  isolation: isolate;
   background: var(--paper);
   transition: background 160ms ease, color 160ms ease;
 }
 
-.landing:has(.center-menu:hover),
-.landing:has(.center-menu a:hover) {
-  background: var(--red);
+.landing::after {
+  content: "→";
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  z-index: 3;
+  color: #000;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(1.8rem, 3vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
-.landing:has(.center-menu:hover) .giant-mark,
-.landing:has(.center-menu a:hover) .giant-mark {
-  color: var(--red);
-  transform: translate(-50%, -50%) scaleX(0.58) scaleY(1.22) skewX(-5deg);
-  filter: url("#none");
+.hero-bg,
+.hero-bg picture,
+.hero-bg img,
+.film-grain {
+  position: absolute;
+  inset: 0;
+}
+
+.landing::after {
+  content: none;
+  display: none;
+}
+
+.hero-bg {
+  z-index: -3;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 48% 49%;
+  filter: grayscale(1) contrast(1.08) brightness(1.02);
+  transform: scale(1.015);
+  transform-origin: center;
+}
+
+.hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(243, 241, 233, 0.3), rgba(243, 241, 233, 0.02) 22%, rgba(243, 241, 233, 0.02) 78%, rgba(243, 241, 233, 0.28)),
+    radial-gradient(circle at 50% 50%, rgba(243, 241, 233, 0.01), rgba(243, 241, 233, 0.16) 80%);
+  pointer-events: none;
+}
+
+.film-grain {
+  z-index: 4;
+  opacity: 0.055;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 12% 24%, rgba(0, 0, 0, 0.25) 0 0.8px, transparent 1.3px),
+    radial-gradient(circle at 72% 36%, rgba(255, 255, 255, 0.28) 0 0.8px, transparent 1.4px),
+    radial-gradient(circle at 44% 78%, rgba(0, 0, 0, 0.16) 0 0.8px, transparent 1.5px);
+  background-size: 5px 5px, 8px 8px, 11px 11px;
 }
 
 .giant-mark {
   position: absolute;
-  top: 50%;
+  top: 52.5%;
   left: 50%;
+  z-index: 3;
   color: var(--red);
   font-family: "Archivo Black", Arial Black, Impact, sans-serif;
-  font-size: clamp(10rem, 26vw, 32rem);
+  font-size: clamp(9.5rem, 24.2vw, 30rem);
   font-style: normal;
   letter-spacing: -0.11em;
   line-height: 0.72;
-  transform: translate(-50%, -50%) scaleX(0.74) scaleY(1.16);
+  transform: translate(-50%, -50%) scaleX(0.78) scaleY(1.13);
   transform-origin: center;
   user-select: none;
   white-space: nowrap;
   transition: color 160ms ease, transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.center-menu {
-  position: relative;
-  z-index: 2;
+.giant-mark span {
+  display: block;
+  transition: opacity 130ms ease;
+}
+
+.giant-mark::after {
+  content: "Play";
+  position: absolute;
+  inset: 0;
   display: grid;
-  justify-items: center;
-  font-size: clamp(3.15rem, 7vw, 8.45rem);
-  line-height: 0.95;
-  text-align: center;
+  place-items: center;
+  color: var(--red);
+  opacity: 0;
+  transition: opacity 130ms ease, letter-spacing 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.center-menu a:hover {
-  color: var(--ink);
-  transform: skewX(-12deg) scaleX(1.06);
+.giant-mark:hover,
+.giant-mark:focus-visible {
+  transform: translate(-50%, -50%) scaleX(0.58) scaleY(1.22) skewX(-5deg);
 }
 
-.center-menu a {
-  transition: transform 140ms ease, color 140ms ease;
+.giant-mark:hover span,
+.giant-mark:focus-visible span {
+  opacity: 0;
+}
+
+.giant-mark:hover::after,
+.giant-mark:focus-visible::after {
+  opacity: 1;
+  letter-spacing: -0.08em;
 }
 
 .sound-warning {
@@ -131,6 +227,8 @@ button {
   line-height: 1.05;
   text-align: center;
   text-transform: uppercase;
+  color: var(--paper);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.36);
 }
 
 .bottom-link {
@@ -138,6 +236,7 @@ button {
   bottom: 8px;
   z-index: 2;
   font-size: clamp(0.8rem, 1.2vw, 1.2rem);
+  color: #000;
 }
 
 .bottom-link.left {
@@ -391,7 +490,7 @@ button {
   overflow: hidden;
   border-top: 1px solid var(--paper);
   border-right: 1px solid var(--paper);
-  background: var(--red);
+  background: #ddd;
 }
 
 .work-card.is-image-loaded {
@@ -399,7 +498,7 @@ button {
 }
 
 .work-card.is-image-missing {
-  background: var(--red);
+  background: #ddd;
 }
 
 .work-card img {
@@ -426,10 +525,6 @@ button {
   transition: opacity 120ms ease;
 }
 
-.work-card:hover::before {
-  opacity: 1;
-}
-
 .work-copy {
   position: absolute;
   inset: 0;
@@ -447,9 +542,15 @@ button {
   opacity: 0;
 }
 
-.work-card:hover .work-copy,
-.work-card.is-image-loaded:hover .work-copy {
-  opacity: 1;
+@media (hover: hover) and (pointer: fine) {
+  .work-card:hover::before {
+    opacity: 1;
+  }
+
+  .work-card:hover .work-copy,
+  .work-card.is-image-loaded:hover .work-copy {
+    opacity: 1;
+  }
 }
 
 .work-copy h2,
@@ -570,13 +671,33 @@ button {
 }
 
 @media (max-width: 760px) {
-  .giant-mark {
-    font-size: clamp(5rem, 24vw, 10rem);
-    letter-spacing: -0.12em;
+  .site-header {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 8px 9px;
   }
 
-  .center-menu {
-    font-size: clamp(3rem, 13vw, 5.2rem);
+  .mini-logo,
+  .header-link {
+    font-size: clamp(0.9rem, 4vw, 1.25rem);
+  }
+
+  .top-menu {
+    gap: clamp(0.55rem, 2.6vw, 1rem);
+    overflow: hidden;
+    font-size: clamp(0.62rem, 2.8vw, 0.9rem);
+  }
+
+  .hero-bg img {
+    object-position: 48% 50%;
+    transform: scale(1.16);
+  }
+
+  .giant-mark {
+    top: 52%;
+    font-size: clamp(5.2rem, 30vw, 11rem);
+    letter-spacing: -0.12em;
+    transform: translate(-50%, -50%) scaleX(0.82) scaleY(1.08);
   }
 
   .work-grid,
@@ -603,5 +724,16 @@ button {
   .footer-infra,
   .footer-links a {
     font-size: 0.78rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
   }
 }

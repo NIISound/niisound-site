@@ -10,21 +10,30 @@
       href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Libre+Baskerville:ital@1&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=wordmark-reverted" />
+    <link rel="stylesheet" href="styles.css?v=olymptrade-player" />
   </head>
   <body>
     <header class="site-header">
       <a class="mini-logo" href="#top">NIISound</a>
+      <nav class="top-menu" aria-label="Section navigation">
+        <a href="#latest">Music</a>
+        <a href="#works">Sounddesign</a>
+        <a href="#contact">Contact</a>
+      </nav>
       <a class="header-link" href="https://www.instagram.com/in.nikandrov/" target="_blank" rel="noopener">Instagram</a>
     </header>
     <main id="top">
       <section class="landing" aria-label="Navigation">
-        <div class="giant-mark" aria-hidden="true" data-default="NIISound">NIISound</div>
-        <nav class="center-menu" aria-label="Primary">
-          <a href="#latest" data-mark="Massive">Music</a>
-          <a href="#works" data-mark="System">Sound-design</a>
-          <a href="#contact" data-mark="Talk">Contact</a>
-        </nav>
+        <div class="hero-bg" aria-hidden="true">
+          <picture>
+            <source srcset="assets/images/hero-speaker-reference.webp" type="image/webp" />
+            <img src="assets/images/hero-speaker-reference.jpg" alt="" decoding="async" fetchpriority="high" />
+          </picture>
+        </div>
+        <div class="film-grain" aria-hidden="true"></div>
+        <a class="giant-mark" href="#latest" aria-label="Open player">
+          <span>NIISound</span>
+        </a>
         <p class="sound-warning">A massive soundsystem studio production By Ivan Nikandrov</p>
         <a class="bottom-link left" href="#latest">try</a>
         <a class="bottom-link right" href="#works">Vimeo</a>
@@ -94,7 +103,7 @@
       </p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.18/dist/hls.min.js"></script>
-    <script src="script.js?v=player-grid-order"></script>
+    <script src="assets/vendor/hls.min.js?v=1.5.18"></script>
+    <script src="script.js?v=olymptrade-player"></script>
   </body>
 </html>
